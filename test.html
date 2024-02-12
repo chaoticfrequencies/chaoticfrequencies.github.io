@@ -1,0 +1,687 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Krittika Seth's Contemplative Photography Blog</title>
+    <style>
+        /* Responsive image gallery Style rules */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+
+        }
+
+        /* Styles for the popup */
+        .pop-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(10px);
+            z-index: 999;
+        }
+
+        .pop-content {
+            background: #ffffff00;
+            padding: 20px;
+            border-radius: 10px;
+            color:#fff;
+            text-align: center;
+        }
+
+        .close-button {
+            cursor: pointer;
+            padding: 50px;
+            transition: color 0.5s ease-in-out;
+            font-size: 1.5rem;
+            color:rgb(124, 198, 255);
+
+        }
+        .close-button:hover{
+            color:rgb(255, 255, 255);
+        }
+        body {
+            font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+            overflow-x: hidden; /* Prevent horizontal scrolling */
+        }
+
+        .container {
+            padding: 40px 5%;
+        }
+
+        .heading-text {
+            margin-bottom: 2rem;
+            font-size: 2rem;
+        }
+        .def-text {
+            margin-bottom: 2rem;
+            font-size: 1rem;
+            text-align: justify;
+        }
+        .head-text {
+            margin-bottom: 2rem;
+            font-size: 3rem;
+        }
+
+        .heading-text span {
+            font-weight: 100;
+        }
+
+        ul {
+            list-style: none;
+        }
+
+        /* Responsive image gallery rules begin */
+        .image-gallery {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .image-gallery > li {
+            flex: 1 1 auto; /* or flex: auto; */
+            height: 300px;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .image-gallery::after {
+            content: "";
+            flex-grow: 999;
+        }
+
+        .image-gallery li img {
+            object-fit: cover;
+            width: 100%;
+            height: 100%;
+            vertical-align: middle;
+            border-radius: 5px;
+        }
+
+        .overlay {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: rgba(57, 57, 57, 0.502);
+            top: 0;
+            left: 0;
+            transform: scale(0);
+            transition: all 0.2s 0.1s ease-in-out;
+            color: #fff;
+            border-radius: 5px;
+            /* center overlay content */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* hover */
+        .image-gallery li:hover .overlay {
+            transform: scale(1);
+        }
+
+        /* Popup styles */
+        .popup-container {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5); /* Background with blur effect */
+            backdrop-filter: blur(10px);
+            align-items: center;
+            justify-content: center;
+            z-index: 2;
+        }
+
+        .popup-content {
+            max-width: 80%;
+            max-height: 80%;
+            overflow: hidden;
+            background: rgba(0, 0, 0, 0); /* Dark frosted glass background */
+            border-radius: 10px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .popup-image {
+            width: 100%;
+            max-height: 70vh;
+            object-fit: contain;
+            border-radius: 10px 10px 0 0;
+        }
+
+        .popup-details {
+            padding: 20px;
+            color: #fff;
+            backdrop-filter: blur(10px); /* Frosted glass effect */
+        }
+
+        .popup-details span {
+            display: block;
+            color: #fff;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+       /* Navbar styles */
+       .navbar {
+            background-color: #333;
+            padding: 10px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .navbar-brand {
+            color: #fff;
+            font-size: 1rem;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .navbar-links {
+            display: flex;
+        }
+
+        .navbar-links a {
+            color: #fff;
+            text-decoration: none;
+            margin: 0 15px;
+            font-size: 1rem;
+            transition: color 0.3s ease-in-out;
+        }
+
+        .navbar-links a:hover {
+            color: rgb(124, 198, 255);
+        }
+
+        .navbar-toggle {
+            font-size: 1rem;
+            color: #fff;
+            cursor: pointer;
+            display: none;
+        }
+
+        /* Mobile dropdown styles */
+        .mobile-dropdown {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(10px);
+            z-index: 99;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .mobile-dropdown a {
+            color: #fff;
+            font-size: 1.2rem;
+            text-decoration: none;
+            margin: 10px;
+            transition: color 0.3s ease-in-out;
+        }
+
+        .mobile-dropdown a:hover {
+            color: rgb(124, 198, 255);
+        }
+
+        /* Media query for mobile view */
+        @media (max-width: 768px) {
+            .navbar-links {
+                display: none;
+            }
+
+            .navbar-toggle {
+                display: block;
+            }
+
+            .mobile-dropdown {
+                display: flex;
+            }
+        }
+
+</style>
+</head>
+<body>
+    <!-- Navbar -->
+    <div class="navbar">
+      <a href="#" class="navbar-brand">Contemplative Photography</a>
+      <div class="navbar-toggle" onclick="toggleMobileDropdown()">&#9776;</div>
+      <div class="navbar-links">
+          <!-- Add your links here -->
+          <a href="#looking-up">Looking Up</a>
+          <a href="#loneliness">Loneliness</a>
+          <a href="#interstices">Interstices</a>
+          <a href="#pause">Pause a Moment</a>
+          <a href="#homewards">Homewards</a>
+          <a href="#the-race-against-time">The Race Against Time</a>
+          <a href="#of-men-and-gods">Of Men and Gods</a>
+      </div>
+  </div>
+
+  <!-- Mobile dropdown menu -->
+  <div class="mobile-dropdown">
+      <!-- Add your links here -->
+      <a href="#looking-up" onclick="toggleMobileDropdown()">Looking Up</a>
+      <a href="#loneliness" onclick="toggleMobileDropdown()">Loneliness</a>
+      <a href="#interstices" onclick="toggleMobileDropdown()">Interstices</a>
+      <a href="#pause" onclick="toggleMobileDropdown()">Pause a Moment</a>
+      <a href="#homewards" onclick="toggleMobileDropdown()">Homewards</a>
+      <a href="#the-race-against-time" onclick="toggleMobileDropdown()">The Race Against Time</a>
+      <a href="#of-men-and-gods" onclick="toggleMobileDropdown()">Of Men and Gods</a>
+  </div>
+
+    <!-- Popup content -->
+    <div class="pop-container" id="popContainer">
+      <div class="pop-content">
+          
+          <h1 style="font-size: 2rem; padding: 20px;">PAUSE. LOOK. NOTICE.</h1>
+          <p style="font-size: 1rem; padding: 20px;">In our fast everyday city life, we often forget to notice. Hardly do ever take notice of the shapes that clouds make, or how the chipped paint on the wall looks like a particular animal. We could only do that in childhood, when our understanding was limited and when we used our imagination to fill in the gaps. What we start losing as we grow up is probably awareness of the moments–in being so caught up with the nostalgia of the past, or the worries about the future, the beauty of the present slips by us. And, then we can only look back upon it, reminisce and tell stories. Or, we spend hours in bed at night anticipating the next day, another such moment.
+
+            The series of photographs that I would like to present would be a window to my perception of the world, my attempt to capture the perfection in the world around us just as it is. In the process, there is also the hope to find and present a new way of seeing. Perfection might indeed be a relative concept, but these photographs will urge you to seek perfection in the mundane.</p>
+            <span class="close-button" style="font-size: 1.5rem; padding: 20px;" onclick="closePopup()">BEGIN YOUR JOURNEY></span>
+      </div>
+  </div>
+
+  <script>
+      // JavaScript code to close the popup
+      function closePopup() {
+          document.getElementById('popContainer').style.display = 'none';
+      }
+
+      // JavaScript code to show the popup on page load
+      window.onload = function() {
+          document.getElementById('popContainer').style.display = 'flex';
+      };
+  </script>
+    <div class="container">
+        <p class="def-text">Please click on the images to enlarge them and view them in their entirety.</p>
+        
+     <div id="looking-up" class="container">
+        <h3 class="heading-text">LOOKING <span>UP</span></h3>
+        <ul class="image-gallery">
+            <li>
+                <img src="assets/looking up/breath.webp" alt="" />
+          <div class="overlay"><span>BREATH</span></div>
+        </li>
+        <li>
+          <img src="assets/looking up/colourburst.jpg" alt="" />
+          <div class="overlay"><span>COLOURBURST</span></div>
+        </li>
+        <li>
+          <img src="assets/looking up/drop.jpg" alt="" />
+          <div class="overlay"><span>DROP</span></div>
+        </li>
+        <li>
+          <img src="assets/looking up/explosion.jpg" alt="" />
+          <div class="overlay"><span>EXPLOSION</span></div>
+        </li>
+        <li>
+          <img src="assets/looking up/over and above.jpg" alt="" />
+          <div class="overlay"><span>OVER AND ABOVE</span></div>
+        </li>
+        <li>
+          <img src="assets/looking up/predator_prey.jpg" alt="" />
+          <div class="overlay"><span>PREDATOR/PREY</span></div>
+        </li>
+        <li>
+          <img src="assets/looking up/reaching up.jpg" alt="" />
+          <div class="overlay"><span>REACHING UP</span></div>
+        </li>
+        </ul>
+    </div>
+
+    
+
+    <div class="popup-container" id="popupContainer">
+        <div class="popup-content" id="popupContent">
+            <img src="" alt="Popup Image" class="popup-image" id="popupImage">
+            <div class="popup-details" id="popupDetails"></div>
+        </div>
+    </div>
+        <div id="loneliness" class="container">
+        <h3 class="heading-text">Lone<span>liness</span></h3>
+        <ul class="image-gallery">
+            <li>
+                <img src="assets/loneliness/dreams.JPG" alt="" />
+          <div class="overlay"><span>DREAMS</span></div>
+        </li>
+        <li>
+          <img src="assets/loneliness/loner.jpg" alt="" />
+          <div class="overlay"><span>LONER</span></div>
+        </li>
+        <li>
+          <img src="assets/loneliness/lost.jpg" alt="" />
+          <div class="overlay"><span>LOST</span></div>
+        </li>
+        <li>
+          <img src="assets/loneliness/rest.JPG" alt="" />
+          <div class="overlay"><span>REST</span></div>
+        </li>
+        <li>
+          <img src="assets/loneliness/set sail.jpg" alt="" />
+          <div class="overlay"><span>SET SAIL</span></div>
+        </li>
+        <li>
+          <img src="assets/loneliness/shroud.jpg" alt="" />
+          <div class="overlay"><span>SHROUD</span></div>
+        </li>
+        <li>
+          <img src="assets/loneliness/sneak peek.jpg" alt="" />
+          <div class="overlay"><span>SNEAK PEEK</span></div>
+        </li>
+        <li>
+          <img src="assets/loneliness/solitary reaper.jpg" alt="" />
+          <div class="overlay"><span>SOLITARY REAPER</span></div>
+        </li>
+
+        <li>
+          <img src="assets/loneliness/turning back.png" alt="" />
+          <div class="overlay"><span>TURNING BACK</span></div>
+        </li>
+        </ul>
+    </div>
+
+    
+
+    <div class="popup-container" id="popupContainer">
+        <div class="popup-content" id="popupContent">
+            <img src="" alt="Popup Image" class="popup-image" id="popupImage">
+            <div class="popup-details" id="popupDetails"></div>
+        </div>
+    </div>
+    <div id="interstices" class="container">
+        <h3 class="heading-text">Inter<span>stices</span></h3>
+        <ul class="image-gallery">
+            <li>
+                <img src="assets/interstices/clap.JPG" alt="" />
+          <div class="overlay"><span>CLAP</span></div>
+        </li>
+        <li>
+          <img src="assets/interstices/ration.JPG" alt="" />
+          <div class="overlay"><span>RATION</span></div>
+        </li>
+        <li>
+          <img src="assets/interstices/rhythms of life.jpg" alt="" />
+          <div class="overlay"><span>RHYTHMS OF LIFE</span></div>
+        </li>
+        <li>
+          <img src="assets/interstices/run, don_t stand.jpg" alt="" />
+          <div class="overlay"><span>RUN</span></div>
+        </li>
+        <li>
+          <img src="assets/interstices/taal.JPG" alt="" />
+          <div class="overlay"><span>TAAL</span></div>
+        </li>
+        <li>
+          <img src="assets/interstices/tether.JPG" alt="" />
+          <div class="overlay"><span>TETHER</span></div>
+        </li>
+        <li>
+          <img src="assets/interstices/twice removed from reality.jpg" alt="" />
+          <div class="overlay"><span>TWICE REMOVED FROM REALITY</span></div>
+        </li>
+        <li>
+          <img src="assets/interstices/ঘটি গরম.JPG" alt="" />
+          <div class="overlay"><span>ঘটি গরম</span></div>
+        </li>
+
+        <li>
+          <img src="assets/interstices/স্নান.JPG" alt="" />
+          <div class="overlay"><span>স্নান</span></div>
+        </li>
+        </ul>
+    </div>
+
+    
+
+    <div class="popup-container" id="popupContainer">
+        <div class="popup-content" id="popupContent">
+            <img src="" alt="Popup Image" class="popup-image" id="popupImage">
+            <div class="popup-details" id="popupDetails"></div>
+        </div>
+    </div>
+
+    
+
+   
+
+    
+
+    <div id="pause" class="container">
+        <h3 class="heading-text">Pause <span>a moment</span></h3>
+        <ul class="image-gallery">
+            <li>
+                <img src="assets/pause/apprehension.jpg" alt="" />
+          <div class="overlay"><span>APPREHENSION</span></div>
+        </li>
+        <li>
+          <img src="assets/pause/blanket.jpg" alt="" />
+          <div class="overlay"><span>BLANKET</span></div>
+        </li>
+        <li>
+          <img src="assets/pause/embrace.jpg" alt="" />
+          <div class="overlay"><span>EMBRACE</span></div>
+        </li>
+        <li>
+          <img src="assets/pause/friendship.JPG" alt="" />
+          <div class="overlay"><span>FRIENDSHIP</span></div>
+        </li>
+        <li>
+          <img src="assets/pause/here rests the king.JPG" alt="" />
+          <div class="overlay"><span>HERE RESTS THE KING</span></div>
+        </li>
+        <li>
+          <img src="assets/pause/hungry time.jpg" alt="" />
+          <div class="overlay"><span>HUNGRY TIME</span></div>
+        </li>
+        <li>
+          <img src="assets/pause/thirst.JPG" alt="" />
+          <div class="overlay"><span>THIRST</span></div>
+        </li>
+        <li>
+          <img src="assets/pause/গাঁদা_গাদা.jpg" alt="" />
+          <div class="overlay"><span>গাঁদা/গাদা</span></div>
+        </li>
+
+        <li>
+          <img src="assets/pause/তৃষ্ণা.JPG" alt="" />
+          <div class="overlay"><span>তৃষ্ণা</span></div>
+        </li>
+        </ul>
+    </div>
+
+    
+
+    <div class="popup-container" id="popupContainer">
+        <div class="popup-content" id="popupContent">
+            <img src="" alt="Popup Image" class="popup-image" id="popupImage">
+            <div class="popup-details" id="popupDetails"></div>
+        </div>
+    </div>
+        <div id="homewards" class="container">
+        <h3 class="heading-text">Home<span>wards</span></h3>
+        <ul class="image-gallery">
+            <li>
+                <img src="assets/homewards/pace.JPG" alt="" />
+          <div class="overlay"><span>PACE</span></div>
+        </li>
+        <li>
+          <img src="assets/homewards/return.JPG" alt="" />
+          <div class="overlay"><span>RETURNING</span></div>
+        </li>
+        <li>
+          <img src="assets/homewards/trail.jpg" alt="" />
+          <div class="overlay"><span>TRAIL</span></div>
+        </li>
+        <li>
+          <img src="assets/homewards/জবরদখল.JPG" alt="" />
+          <div class="overlay"><span>জবরদখল</span></div>
+        </li>
+        <li>
+          <img src="assets/homewards/শরিক.jpg" alt="" />
+          <div class="overlay"><span>শরিক</span></div>
+        </li>
+        </ul>
+    </div>
+
+    
+
+    <div class="popup-container" id="popupContainer">
+        <div class="popup-content" id="popupContent">
+            <img src="" alt="Popup Image" class="popup-image" id="popupImage">
+            <div class="popup-details" id="popupDetails"></div>
+        </div>
+    </div>
+    
+    <div id="the-race-against-time" class="container">
+        <h3 class="heading-text">The Race <span>Against Time</span></h3>
+        <ul class="image-gallery">
+            <li>
+                <img src="assets/the race against time/Run comrade, the old world is behind you.JPG" alt="" />
+          <div class="overlay"><span>RUN COMRADE, THE OLD WORLD IS BEHIND YOU</span></div>
+        </li>
+        <li>
+          <img src="assets/the race against time/ageing.JPG" alt="" />
+          <div class="overlay"><span>AGEING</span></div>
+        </li>
+        <li>
+          <img src="assets/the race against time/death_s kiss.jpg" alt="" />
+          <div class="overlay"><span>DEATH'S KISS</span></div>
+        </li>
+        <li>
+          <img src="assets/the race against time/flood.JPG" alt="" />
+          <div class="overlay"><span>FLOOD</span></div>
+        </li>
+        <li>
+          <img src="assets/the race against time/messengers.jpg" alt="" />
+          <div class="overlay"><span>MESSENGERS</span></div>
+        </li>
+        <li>
+          <img src="assets/the race against time/ride.jpg" alt="" />
+          <div class="overlay"><span>RIDE</span></div>
+        </li>
+        <li>
+          <img src="assets/the race against time/time & tide wait for none.JPG" alt="" />
+          <div class="overlay"><span>TIME AND TIDE WAIT FOR NO ONE</span></div>
+        </li>
+        <li>
+          <img src="assets/the race against time/বোঝা.JPG" alt="" />
+          <div class="overlay"><span>বোঝা</span></div>
+        </li>
+        </ul>
+    </div>
+
+    
+
+    <div class="popup-container" id="popupContainer">
+        <div class="popup-content" id="popupContent">
+            <img src="" alt="Popup Image" class="popup-image" id="popupImage">
+            <div class="popup-details" id="popupDetails"></div>
+        </div>
+    </div>
+
+  <div id="of-men-and-gods"class="container">
+        <h3 class="heading-text">Of Men <span>And Gods</span></h3>
+        <ul class="image-gallery">
+            <li>
+                <img src="assets/of men and gods/img.jpg" alt="" />
+          <div class="overlay"><span>AND HE STOPPETH ONE OF THREE</span></div>
+        </li>
+        <li>
+          <img src="assets/of men and gods/daughter.JPG" alt="" />
+          <div class="overlay"><span>DAUGHTER</span></div>
+        </li>
+        <li>
+          <img src="assets/of men and gods/devotion.JPG" alt="" />
+          <div class="overlay"><span>DEVOTION</span></div>
+        </li>
+        <li>
+          <img src="assets/of men and gods/let there be light.jpg" alt="" />
+          <div class="overlay"><span>LET THERE BE LIGHT</span></div>
+        </li>
+        <li>
+          <img src="assets/of men and gods/question.JPG" alt="" />
+          <div class="overlay"><span>QUESTION</span></div>
+        </li>
+        <li>
+          <img src="assets/of men and gods/reaching for the god.jpg" alt="" />
+          <div class="overlay"><span>REACHING FOR THE GOD</span></div>
+        </li>
+        <li>
+          <img src="assets/of men and gods/shelter.png" alt="" />
+          <div class="overlay"><span>SHELTER</span></div>
+        </li>
+        <li>
+          <img src="assets/of men and gods/worship.JPG" alt="" />
+          <div class="overlay"><span>WORSHIP</span></div>
+        </li>
+        </ul>
+    </div>
+
+    
+
+    <div class="popup-container" id="popupContainer">
+        <div class="popup-content" id="popupContent">
+            <img src="" alt="Popup Image" class="popup-image" id="popupImage">
+            <div class="popup-details" id="popupDetails"></div>
+        </div>
+    </div>
+
+    <script>
+      // JavaScript code
+      const galleryItems = document.querySelectorAll('.image-gallery li');
+      const popupContainer = document.getElementById('popupContainer');
+      const popupContent = document.getElementById('popupContent');
+      const popupImage = document.getElementById('popupImage');
+      const popupDetails = document.getElementById('popupDetails');
+
+  
+      galleryItems.forEach(item => {
+          item.addEventListener('click', () => {
+              const imgSrc = item.querySelector('img').src;
+              const imgAlt = item.querySelector('img').alt;
+              const imgTitle = item.querySelector('.overlay span').textContent;
+  
+  
+              // Set the content of the popup
+              popupImage.src = imgSrc;
+              popupImage.alt = imgAlt;
+              popupDetails.innerHTML = `<span>${imgTitle}</span>`; // Using innerHTML to add a span element
+  
+                  // Show the popup
+                  popupContainer.style.display = 'flex';
+              }, 1000); // You can adjust the delay as needed
+          });
+  
+      popupContainer.addEventListener('click', (event) => {
+          if (event.target === popupContainer) {
+              // Close the popup when clicking outside the content
+              popupContainer.style.display = 'none';
+          }
+      });
+      function toggleMobileDropdown() {
+            const mobileDropdown = document.querySelector('.mobile-dropdown');
+            mobileDropdown.style.display = (mobileDropdown.style.display === 'flex') ? 'none' : 'flex';
+        }
+  </script>
+  
+</body>
+</html>
